@@ -28,13 +28,13 @@ vector<string> list_valid_moves(Map map){
 		assert(map[y].size()==10);
 		for(int x=0; x<10; x+=1){
 			if((map[y][x]>='0'&&map[y][x]<='9') || map[y][x]=='M'){
-				if(x!=0 && (map[y][x-1]=='.' || map[y][x-1]=='?'))
+				if(x!=0 && (map[y][x-1]=='.' || map[y][x-1]=='#'))
 					ret.push_back("MOVE "+make_coordinate(x,y)+" "+make_coordinate(x-1,y));
-				if(x!=9 && (map[y][x+1]=='.' || map[y][x+1]=='?'))
+				if(x!=9 && (map[y][x+1]=='.' || map[y][x+1]=='#'))
 					ret.push_back("MOVE "+make_coordinate(x,y)+" "+make_coordinate(x+1,y));
-				if(y!=0 && (map[y-1][x]=='.' || map[y-1][x]=='?'))
+				if(y!=0 && (map[y-1][x]=='.' || map[y-1][x]=='#'))
 					ret.push_back("MOVE "+make_coordinate(x,y)+" "+make_coordinate(x,y-1));
-				if(y!=9 && (map[y+1][x]=='.' || map[y+1][x]=='?'))
+				if(y!=9 && (map[y+1][x]=='.' || map[y+1][x]=='#'))
 					ret.push_back("MOVE "+make_coordinate(x,y)+" "+make_coordinate(x,y+1));
 			}
 		}
