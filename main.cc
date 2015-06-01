@@ -99,36 +99,43 @@ int main(int argc, char* argv[]){
 	} else cout<<"piece setup accepted\n";
 
 	while(true){
-		string input = receiveln(fd);
-		cout <<"input: [" << input << "]\n";
-		if(input=="START" || input=="EMPTY" || input.compare(0,6,"ATTACK")==0){
-			Map map = receive_map(fd);
+		// receive opponent move
+		string opponent_move = receiveln(fd);
+
+		// receive map
+		Map map = receive_map(fd);
+
+		// send response
+		if(opponent_move.compare(0,6,"DEFEND")==0){
 			vector<string> valid_moves = list_valid_moves(map);
+			assert(valid_moves.size()!=0);
 			std::uniform_int_distribution<int> select(0,valid_moves.size()-1);
 			auto selection = select(rng);
-			cout<<"selection: "<<selection<<endl;
 			sendln(fd, valid_moves[selection]);
-			if(receiveln(fd)=="INVALID"){
-				cout<<"onoes! I made an invalid move!\n";
-				exit(1);
-			}
-		}else if(input=="WAIT"){
-			continue;
-		}else if(input==""){
-			cout<<"received empty string\n";
-			return 1;
-		}else if(input=="WIN"){
-			cout<<"hurray! I won!"<<endl;
-			return 0;
-		}else if(input=="LOSE"){
-			cout<<"aww I lost!"<<endl;
-			return 0;
-		}else if(input=="INVALID"){
-			cout<<"I broke something D:"<<endl;
-			return 1;
+		}else if(opponent_move=="WIN"){
+			cout<<"hey, I won!"<<endl;
+			exit(0);
+		}else if(opponent_move=="LOSE"){
+			cout<<"aww, I lost!"<<endl;
+			exit(0);
 		}else{
-			cout<<"unexpected input: "<<input<<endl;
-			return 1;
+			cout<<"opponent move: unexpected input: "<<opponent_move<<endl;
+			exit(1);
+		}
+
+		// receive response
+		string response = receiveln(fd);
+		if(response.compare(0,6,"ATTACK")==0){
+			continue;
+		}else if(response=="WIN"){
+			cout<<"hey, I won!"<<endl;
+			exit(0);
+		}else if(response=="LOSE"){
+			cout<<"aww, I lost!"<<endl;
+			exit(0);
+		}else{
+			cout<<"server response: unexpected input: "<<response<<endl;	
+			exit(1);
 		}
 	}
 };
