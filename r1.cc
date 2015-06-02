@@ -6,35 +6,16 @@
 #include<cstdint>
 #include<chrono>
 #include<array>
-#include<cstdlib>
 
 #include "r.h"
 #include"connector.h"
 using namespace std;
 
 int main(int argc, char* argv[]){
-	int fd;
-	int64_t seed;
-	if(argc==4){
-		fd   = connect(argv[1],atol(argv[2]));
-		seed = atoll(argv[3]);
-		cout << "using user-provided seed " << seed << endl;
-	}else if(argc==3){
-		fd   = connect(argv[1],atol(argv[2]));
-		seed = std::chrono::system_clock::now().time_since_epoch().count();
-		cout << "using time-based seed " << seed << endl;
-	}else{
-		fd   = connect("localhost",3720);
-		seed = std::chrono::system_clock::now().time_since_epoch().count();
-		cout << "using time-based seed " << seed << endl;
-	}
+	init_data init = initialize(argc,argv);
+	int fd = init.fd;
 
-	if(fd<0){
-		cout << "unable to connect\n"; 
-		return 1;
-	}else cout<<"connected!\n";
-
-	std::mt19937 rng(seed);
+	std::mt19937 rng(init.seed);
 	std::uniform_int_distribution<int> cointoss(0,1);
 
 	sendln(fd,cointoss(rng)?"RED":"BLUE");

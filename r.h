@@ -3,7 +3,35 @@
 #include<vector>
 #include<array>
 #include<cassert>
+#include<cstdint>
+#include<iostream>
 #include"connector.h"
+
+struct init_data{
+	uint64_t seed;
+	int fd;
+};
+
+init_data initialize(int argc, char* argv[]){
+	init_data d;
+	if(argc==4){
+		d.fd   = connect(argv[1],atol(argv[2]));
+		d.seed = atoll(argv[3]);
+	}else if(argc==3){
+		d.fd   = connect(argv[1],atol(argv[2]));
+		d.seed = std::chrono::system_clock::now().time_since_epoch().count();
+	}else{
+		d.fd   = connect("localhost",3720);
+		d.seed = std::chrono::system_clock::now().time_since_epoch().count();
+	}
+
+	if(d.fd<0){
+		std::cout << "unable to connect\n"; 
+		exit(1);
+	}else std::cout<<"connected!\n";
+
+	return d;
+}
 
 std::string make_coordinate(int x, int y){
 	assert(x>=0 && x<10);
